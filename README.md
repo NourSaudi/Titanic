@@ -14,7 +14,6 @@
 [Features](#-features) •
 [Quick Start](#-quick-start) •
 [Methodology](#-methodology) •
-[Results](#-results) •
 [Project Structure](#-project-structure)
 
 </div>
@@ -23,21 +22,21 @@
 
 ## 📊 Overview
 
-This project uses machine learning algorithms to predict the survival of passengers aboard the RMS Titanic. The model analyzes historical data from 891 passengers, utilizing features such as age, sex, passenger class, and number of siblings/spouses aboard.
+This project uses machine learning to predict the survival of passengers aboard the RMS Titanic. The model analyzes data from 891 training passengers and makes predictions for 418 test passengers using a **Logistic Regression** classifier.
 
 ### 🎯 Objective
-Predict whether a passenger survived or not based on their personal characteristics, achieving the highest possible prediction accuracy.
+Predict whether a passenger survived or not based on their characteristics to submit to Kaggle's Titanic competition.
 
 ---
 
 ## ✨ Features
 
-- 🤖 Optimized **Logistic Regression** model for binary classification
-- 📈 Comprehensive data preprocessing with intelligent missing value handling
-- 🔄 Advanced feature engineering with One-Hot Encoding
-- ⚖️ StandardScaler for data normalization and performance improvement
-- 📊 Complete evaluation with Accuracy, Precision, Recall, and F1-Score
+- 🤖 **Logistic Regression** classifier with max_iter=1000
+- � Simple and effective feature selection (4 features only)
+- 🔄 One-Hot Encoding for categorical variables
+- 🎯 Direct training on full dataset (no train/validation split)
 - 📁 Clean, organized code in Jupyter Notebook
+- 💾 Automated submission file generation
 
 ---
 
@@ -55,8 +54,8 @@ pip install pandas numpy scikit-learn matplotlib seaborn
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/titanic-prediction.git
-   cd titanic-prediction
+   git clone https://github.com/NourSaudi/Titanic.git
+   cd Titanic
    ```
 
 2. **Launch Jupyter Notebook:**
@@ -65,74 +64,65 @@ pip install pandas numpy scikit-learn matplotlib seaborn
    ```
 
 3. **Execute cells in order:**
+   - Import libraries
    - Load data
-   - Preprocess data
+   - Prepare features
    - Train model
    - Generate predictions
+   - Save submission file
 
 ---
 
 ## 🔬 Methodology
 
-### 1️⃣ Exploratory Data Analysis
-
-- Gender-based survival analysis (Women: **74%** survival rate, Men: **19%**)
-- Missing value inspection and feature distribution
-- Correlation analysis between features and survival rate
-
-### 2️⃣ Data Preprocessing
+### 1️⃣ Data Loading
 
 ```python
-features = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare']
-
-X_train = X_train.fillna(X_train.median(numeric_only=True))
-X_train = pd.get_dummies(X_train, drop_first=True)
-
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
+df_train = pd.read_csv("train.csv")
+df_test = pd.read_csv("test.csv")
 ```
 
-### 3️⃣ Model Building
+- Training data: 891 passengers with survival labels
+- Test data: 418 passengers (predictions needed)
+
+### 2️⃣ Feature Selection & Engineering
+
+```python
+y_train = df_train['Survived']
+features = ["Pclass", "Sex", "SibSp", "Parch"]
+X_train = pd.get_dummies(df_train[features])
+X_test = pd.get_dummies(df_test[features])
+
+X_train = pd.get_dummies(X_train, drop_first=True)
+X_test = pd.get_dummies(X_test, drop_first=True)
+```
+
+**Selected Features:**
+- **Pclass** (1-3): Passenger class (1st, 2nd, 3rd)
+- **Sex** (male/female): Passenger gender
+- **SibSp** (0-8): Number of siblings/spouses aboard
+- **Parch** (0-6): Number of parents/children aboard
+
+**Note:** Age, Fare, Name, Ticket, Cabin, and Embarked were excluded to keep the model simple.
+
+### 3️⃣ Model Training
 
 ```python
 model = LogisticRegression(max_iter=1000)
-model.fit(X_train_scaled, y_train)
+model.fit(X_train, y_train)
 ```
 
-### 4️⃣ Evaluation
+- **Model:** Logistic Regression
+- **Parameters:** max_iter=1000 (ensures convergence)
+- **Training:** Trained on all 891 passengers (no validation split)
 
-- Train/Validation Split: 80/20 ratio
-- Metrics: Accuracy, Confusion Matrix, Precision, Recall, F1-Score
+### 4️⃣ Prediction & Submission
 
----
-
-## 📈 Results
-
-### Performance on Validation Data
-
-| Metric | Value |
-|--------|-------|
-| **Accuracy** | **~80%** |
-| **Precision** | **~79%** |
-| **Recall** | **~72%** |
-| **F1-Score** | **~75%** |
-
-### Confusion Matrix
-
+```python
+y_pred = model.predict(X_test)
+output = pd.DataFrame({'PassengerId': df_test.PassengerId, 'Survived': y_pred})
+output.to_csv('submission.csv', index=False)
 ```
-                Predicted
-              Not Survived  Survived
-Actually
-Not Survived      90           15
-Survived          21           53
-```
-
-### Most Influential Features
-
-1. 👥 **Sex** - Strongest predictor of survival
-2. 🎫 **Pclass** - First-class passengers had higher survival rates
-3. 👶 **Age** - Children had better survival chances
-4. 💰 **Fare** - Correlated with socioeconomic status
 
 ---
 
@@ -145,9 +135,7 @@ Titanic/
 ├── 📊 test.csv                  # Test data (418 passengers)
 ├── 📓 Titanic.ipynb            # Main Jupyter Notebook
 ├── 📄 submission.csv            # Final submission file
-├── 🐍 evaluation_code.py       # Standalone evaluation script
-├── 📖 README.md                # This file
-└── 📊 gender_submission.csv    # Sample submission
+└── 📖 README.md                # This file
 ```
 
 ---
@@ -160,10 +148,10 @@ Titanic/
 |---------|-----------|
 | **Python 3.11** | Core programming language |
 | **Pandas** | Data manipulation and analysis |
-| **NumPy** | Mathematical operations |
-| **Scikit-Learn** | ML model building and evaluation |
+| **NumPy** | Numerical operations |
+| **Scikit-Learn** | Logistic Regression model |
 | **Matplotlib & Seaborn** | Data visualization |
-| **Jupyter Notebook** | Interactive development environment |
+| **Jupyter Notebook** | Interactive development |
 
 </div>
 
@@ -173,41 +161,42 @@ Titanic/
 
 ```mermaid
 graph LR
-    A[📥 Raw Data] --> B[🧹 Data Cleaning]
-    B --> C[🔧 Feature Engineering]
-    C --> D[⚖️ Scaling]
-    D --> E[🤖 Model Training]
-    E --> F[📊 Evaluation]
-    F --> G[🎯 Predictions]
-    G --> H[💾 Submission]
+    A[📥 Load Data] --> B[🎯 Select Features]
+    B --> C[� One-Hot Encoding]
+    C --> D[🤖 Train Model]
+    D --> E[🎯 Predict]
+    E --> F[💾 Save Submission]
 ```
 
 ---
 
 ## 💡 Key Insights
 
-1. **Women and Children First** 👩‍👧: Data confirms this policy was real
-2. **Wealth Matters** 💎: First-class passengers had significantly higher survival rates
-3. **Data Quality** 🔧: Proper handling of missing values improves accuracy
-4. **Feature Alignment** ⚙️: Critical to synchronize columns between train and test sets
+1. **Gender is Key** 👩: Sex is the strongest predictor - women had much higher survival rates
+2. **Class Matters** 🎫: First-class passengers had better chances of survival
+3. **Family Size** 👨‍👩‍�: Number of family members aboard affects survival
+4. **Simplicity Works** ⚡: A simple model with 4 features can be effective
+5. **One-Hot Encoding** 🔢: Converts categorical variables (Sex) to numerical format
 
 ---
 
 ## 🎓 Future Improvements
 
-- [ ] Experiment with advanced models (Random Forest, XGBoost, Neural Networks)
-- [ ] Additional feature engineering (extract titles from names)
-- [ ] Hyperparameter tuning using GridSearchCV
-- [ ] Cross-validation for more robust evaluation
-- [ ] Ensemble methods combining multiple models
+- [ ] Add Age and Fare features (with proper missing value handling)
+- [ ] Extract titles from names (Mr, Mrs, Miss, Master)
+- [ ] Implement train/validation split for model evaluation
+- [ ] Try advanced models (Random Forest, XGBoost)
+- [ ] Perform hyperparameter tuning
+- [ ] Add cross-validation for robust performance estimation
+- [ ] Feature engineering (family size = SibSp + Parch)
 
 ---
 
 ## 📚 References
 
 - [Kaggle Titanic Competition](https://www.kaggle.com/c/titanic)
-- [Scikit-Learn Documentation](https://scikit-learn.org/stable/)
-- [Pandas User Guide](https://pandas.pydata.org/docs/)
+- [Scikit-Learn Logistic Regression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html)
+- [Pandas Documentation](https://pandas.pydata.org/docs/)
 
 ---
 
@@ -216,8 +205,8 @@ graph LR
 **Nour Saudi**
 
 - 🌐 GitHub: [@NourSaudi](https://github.com/NourSaudi)
-- 💼 LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourusername)
-- 📧 Email: your.email@example.com
+- 💼 LinkedIn: [Nour Saudi](www.linkedin.com/in/nour-saudi-16008a2bb)
+- 📧 Email: noureldinsaudi1234123455@gmail.com
 
 ---
 
