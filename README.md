@@ -205,7 +205,7 @@ graph LR
 **Nour Saudi**
 
 - 🌐 GitHub: [@NourSaudi](https://github.com/NourSaudi)
-- 💼 LinkedIn: [Nour Saudi](www.linkedin.com/in/nour-saudi-16008a2bb)
+- 💼 LinkedIn: www.linkedin.com/in/nour-saudi-16008a2bb
 - 📧 Email: noureldinsaudi1234123455@gmail.com
 
 ---
